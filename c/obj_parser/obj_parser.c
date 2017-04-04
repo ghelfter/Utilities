@@ -44,11 +44,18 @@ int parse_obj_file(const char *filename, struct WavefrontOBJ *object)
 
     /* Vertex indices */
     unsigned int c_v = 0u;
+    unsigned int c_vt = 0u;
+    unsigned int c_vn = 0u;
 
     /* Element counts */
     unsigned int n_p = 0u;
     unsigned int n_l = 0u;
     unsigned int n_f = 0u;
+
+    /* Element indices */
+    unsigned int c_f = 0u;
+    unsigned int c_l = 0u;
+    /* unsigned int c_p = 0u; */
 
     /*int bsize = OBJ_PARSER_BUFFER_SIZE;*/
     char *line = NULL;
@@ -148,6 +155,23 @@ int parse_obj_file(const char *filename, struct WavefrontOBJ *object)
     {
         object->verts = malloc(sizeof(double) * 3 * n_v);
     }
+    if(object->nuvs)
+    {
+        object->uvs = malloc(sizeof(double) * 3 * n_vt);
+    }
+    if(object->nnorms)
+    {
+        object->norms = malloc(sizeof(double) * 3 * n_vn);
+    }
+
+    if(object->nfaces)
+    {
+        object->faces = malloc(sizeof(unsigned int) * 3 * n_f);
+    }
+    if(object->nlines)
+    {
+        object->lines = malloc(sizeof(unsigned int) * 2 * n_l);
+    }
 
     /* Reset back to the beginning of the file */
     fseek(in_file, 0, SEEK_SET);
@@ -173,9 +197,27 @@ int parse_obj_file(const char *filename, struct WavefrontOBJ *object)
         tok_res = strtok_r(line, " ", &tokenized);
         if(!strncmp(tok_res, l_text_vert, 2))
         {
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vt] = atof(tok_res);
+            ++c_vt;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vt] = atof(tok_res);
+            ++c_vt;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vt] = atof(tok_res);
+            ++c_vt;
         }
         else if(!strncmp(tok_res, l_vert_norm, 2))
         {
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vn] = atof(tok_res);
+            ++c_vn;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vn] = atof(tok_res);
+            ++c_vn;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->uvs[c_vn] = atof(tok_res);
+            ++c_vn;
         }
         else if(!strncmp(tok_res, l_para_vert, 2))
         {
@@ -191,6 +233,29 @@ int parse_obj_file(const char *filename, struct WavefrontOBJ *object)
             tok_res = strtok_r(NULL, " ", &tokenized);
             object->verts[c_v] = atof(tok_res);
             ++c_v;
+        }
+
+        /* Check our element types */
+        else if(!strncmp(tok_res, l_face, 1))
+        {
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->faces[c_f] = atol(tok_res);
+            ++c_f;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->faces[c_f] = atol(tok_res);
+            ++c_f;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->faces[c_f] = atol(tok_res);
+            ++c_f;
+        }
+        else if(!strncmp(tok_res, l_line, 1))
+        {
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->lines[c_l] = atol(tok_res);
+            ++c_l;
+            tok_res = strtok_r(NULL, " ", &tokenized);
+            object->lines[c_l] = atol(tok_res);
+            ++c_l;
         }
     }
 
@@ -214,7 +279,15 @@ void access_vertex(const struct WavefrontOBJ *object, double *x,
     (*z) = *(object->verts + index + 2);
 }
 
-void access_uv();
+void access_uv(const struct WavefrontOBJ *object, double *x,
+               double *y, double *z, int loc)
+{
+    int index = loc * 3;
+
+    (*x) = *(object->uvs + index);
+    (*y) = *(object->uvs + index + 1);
+    (*z) = *(object->uvs + index + 2);
+}
 
 void access_norm(const struct WavefrontOBJ *object, double *x,
                  double *y, double *z, int loc)

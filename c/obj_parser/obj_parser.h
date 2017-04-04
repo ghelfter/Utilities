@@ -27,6 +27,8 @@ int parse_obj_file(const char *filename, struct WavefrontOBJ *object);
 
 void access_vertex(const struct WavefrontOBJ *object, double *x,
                    double *y, double *z, int loc);
+void access_uv(const struct WavefrontOBJ *object, double *x,
+               double *y, double *z, int loc);
 void access_norm(const struct WavefrontOBJ *object, double *x,
                  double *y, double *z, int loc);
 
