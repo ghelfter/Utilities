@@ -14,19 +14,24 @@ $helpstr = "Available options:\n\t* help (h) - prints help";
 if (@ARGV.length > 0)
 {
     $i = 0;
-    while($i < @ARGV.length)
+    # Go through all of the arguments
+    while ($i < @ARGV.length)
     {
         ++$i;
-        if(@ARGV[i] eq "h" or @ARGV[i] eq "help")
+        if (@ARGV[i] eq "h" or @ARGV[i] eq "help")
         {
             print "${helpstr}\n";
         }
     }
 }
+
+# If no secondary commands, just display the file
 else
 {
     open(LIST, "<${loc}");
-    while(<LIST>)
+
+    # Go through each line
+    while (<LIST>)
     {
         print "$_";
     }
